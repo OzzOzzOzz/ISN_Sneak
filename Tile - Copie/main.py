@@ -22,17 +22,19 @@ class Game:
         with open(path.join(game_folder, 'map.txt'), 'rt')as f:
             for line in f:
                 self.map_data.append(line)
-
     def new(self):
         #Reset the Game
         self.load_data()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        for row, tiles in enumerate(self.map_data):
-            for col, tile in enumerate(tiles):
-                if tile == '1':
+
+        MAP1img = pg.image.load("MAP1.png")
+        for row in range(int(HEIGHT / TILESIZE)):
+            for col in range(int(WIDTH / TILESIZE)):
+                pixelcolor = pg.MAP1img.get_at((col, row))
+                if pixelcolor == BLACK:
                     Wall(self, col, row)
-                if tile == '*':
+                if pixelcolor == (118, 0, 218):
                     self.player = Player(self, col, row)
         g.run()
 
@@ -40,7 +42,7 @@ class Game:
         #Game Loop
         self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000
+            self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
@@ -49,6 +51,7 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
         pg.display.set_caption(TITLE + 'FPS : ' + str(self.clock))
+        print(self.player.pos)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -77,6 +80,10 @@ class Game:
                     if self.playing:
                         self.playing = False
                     self.running = False
+                if event.key == pg.K_SPACE or event.key == pg.K_UP:
+                    self.player.Jump()
+                if event.key == pg.K_r:
+                    self.new()
 
 
     def start_screen(self):

@@ -29,7 +29,7 @@ white = (255,255,255)
 
 #CLASS
 #class Player():
-    
+
 
 class Hitbox():
     dim = (70,35)
@@ -52,10 +52,10 @@ def do_list(item_list,do):
     for item in item_list:
         if do == 'draw_hit()':
             item.draw_hit()
-        
+
 def background():
     gameDisplay.blit(backgroundimg,(0,0))
-    
+
 def colision(ax,ay,aw,ah,bx,by,bw,bh):
     return ax < bx+bw and ay < by+bh and bx < ax+aw and by < ay+ah
 
@@ -64,7 +64,7 @@ def colix(ax,aw,bx,bw,):
 
 def coley(ay,ah,by,bh):
     return ay < by+bh and by < ay+ah
-    
+
 def game_loop():
     #VARIABLE DEF
     movex = 0
@@ -78,7 +78,7 @@ def game_loop():
 
     hitbox_0 = Hitbox()
     hitbox_0.cord = (250, 430)
-    
+
     hitbox_1 = Hitbox()
     hitbox_1.cord = (400, 380)
 
@@ -106,7 +106,7 @@ def game_loop():
                 #RIGHT
                 if event.key == pygame.K_RIGHT :
                     movex = speed
-                
+
                 #UP
                 if event.key == pygame.K_UP:
                     jumping = True
@@ -133,7 +133,7 @@ def game_loop():
 
         if colision(x,y,simon_width,simon_height,
                      hitbox_0.cord[0],hitbox_0.cord[1],hitbox_0.dim[0],hitbox_0.dim[1]):
-            
+
             if colix(x,simon_width,
                      hitbox_0.cord[0],hitbox_0.dim[0]):
                 movex = 0
@@ -143,7 +143,7 @@ def game_loop():
         #MOVES
         x += movex
         y += movey
-        
+
         #GRAVITY
         if jumping:
             movey += gravity
@@ -158,7 +158,7 @@ def game_loop():
         if y > display_height *.9 - simon_height:
             movey = 0
             y = display_height *.9 - simon_height
-            
+
         #COLISION
         if do_list(hitbox_list,'colision()'):
             movey = 0
