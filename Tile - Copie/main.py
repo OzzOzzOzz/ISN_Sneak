@@ -1,6 +1,7 @@
 #Sneak
 import pygame as pg
 import random
+import os
 from os import path
 from settings import *
 from sprites import *
@@ -28,7 +29,9 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
 
-        MAP1img = pg.image.load("MAP1.png")
+        working_dir = path.dirname("__file__")
+        MAP1img = pg.image.load(path.join(working_dir, 'assets', 'MAP1.png')).convert()
+        #MAP1img = pg.image.load(os.path.join("assets","MAP1.png"))
         for row in range(int(HEIGHT / TILESIZE)):
             for col in range(int(WIDTH / TILESIZE)):
                 pixelcolor = pg.MAP1img.get_at((col, row))
