@@ -1,7 +1,6 @@
 #Sneak
 import pygame as pg
 import random
-import os
 from os import path
 from settings import *
 from sprites import *
@@ -18,26 +17,22 @@ class Game:
         pg.key.set_repeat(500,100)
 
     def load_data(self):
-        game_folder = path.dirname(__file__)
+        game_folder = path.dirname("__file__")
         self.map_data = []
         with open(path.join(game_folder, 'map.txt'), 'rt')as f:
             for line in f:
                 self.map_data.append(line)
+
     def new(self):
         #Reset the Game
         self.load_data()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-
-        working_dir = path.dirname("__file__")
-        MAP1img = pg.image.load(path.join(working_dir, 'assets', 'MAP1.png')).convert()
-        #MAP1img = pg.image.load(os.path.join("assets","MAP1.png"))
-        for row in range(int(HEIGHT / TILESIZE)):
-            for col in range(int(WIDTH / TILESIZE)):
-                pixelcolor = pg.MAP1img.get_at((col, row))
-                if pixelcolor == BLACK:
+        for row, tiles in enumerate(self.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
                     Wall(self, col, row)
-                if pixelcolor == (118, 0, 218):
+                if tile == '*':
                     self.player = Player(self, col, row)
         g.run()
 
@@ -54,7 +49,6 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
         pg.display.set_caption(TITLE + 'FPS : ' + str(self.clock))
-        print(self.player.pos)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -83,11 +77,13 @@ class Game:
                     if self.playing:
                         self.playing = False
                     self.running = False
-                if event.key == pg.K_SPACE or event.key == pg.K_UP:
-                    self.player.Jump()
-                if event.key == pg.K_r:
-                    self.new()
-
+                if event.key == pg.K_SPACE:
+                    self.player.jump()
+                if event.key == pg.K_d:
+                    PLAYER_ACC = input("ACC: ")
+                    PLAYER_FRICTION = input("FRIC: ")
+                    PLAYER_GRAV = input("GRAV: ")
+                    PLAYER_JUMP = input("JMUP: ")
 
     def start_screen(self):
         #Start screen

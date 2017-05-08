@@ -5,9 +5,9 @@ vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.game = game
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
@@ -15,22 +15,23 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
 
-    def Jump(self):
-        '''
-        #jump if on platform
-        self.rect.x += 1
-        hits = pg.sprite.spritecollide(self, self.game.walls, False)
-        self.rect.x -=1
-        if hits:
-        '''
-        print('JUMP')
-        self.vel.y = -PLAYER_JUMP
+    def jump(self):
+
+        self.rect.y += 1
+        hit = pg.sprite.spritecollide(self, self.game.walls, False)
+        self.rect.y -= 1
+        if hit:
+            self.vel.y = -PLAYER_JUMP
+            self.jump_2 = True
+        elif self.jump_2:
+            self.vel.y = -PLAYER_JUMP
+            self.jump_2 = False
 
     def collide_walls(self, dir):
         if dir == 'x':
+            #print("coll x")
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                print('collide x')
                 if self.vel.x > 0:
                     self.pos.x = hits[0].rect.left - self.rect.width
                 if self.vel.x < 0:
@@ -39,9 +40,9 @@ class Player(pg.sprite.Sprite):
                 self.rect.x = self.pos.x
 
         if dir == 'y':
+            #print('coll y')
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                print('collide y')
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - self.rect.height
                 if self.vel.y < 0:
@@ -59,20 +60,19 @@ class Player(pg.sprite.Sprite):
 
 
 
+
     def update(self):
         self.get_keys()
-
-        # apply friction
-        self.acc.x = self.acc.x + self.vel.x * PLAYER_FRICTION
+        self.acc = self.acc + self.vel * PLAYER_FRICTION
         # motion equation
-        self.vel = (self.vel + self.acc)
+        self.vel = self.vel + self.acc
         self.pos = self.pos + self.vel + 0.5 * self.acc
-
 
         self.rect.x = self.pos.x
         self.collide_walls('x')
         self.rect.y = self.pos.y
         self.collide_walls('y')
+
 
 
 class Wall(pg.sprite.Sprite):
@@ -81,8 +81,7 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        r1 = randint(0, 255)
-        self.image.fill((0, r1, 0))
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
