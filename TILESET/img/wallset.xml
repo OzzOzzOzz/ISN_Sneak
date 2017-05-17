@@ -1,0 +1,22 @@
+<TextureAtlas imagePath="sprites.png">
+    <SubTexture name="upper_left.png" x="0" y="0" width="32" height="32"/>
+    <SubTexture name="up.png" x="32" y="0" width="32" height="32"/>
+    <SubTexture name="upper_right.png" x="64" y="0" width="32" height="32"/>
+    <SubTexture name="left.png" x="0" y="32" width="32" height="32"/>
+    <SubTexture name="center.png" x="32" y="32" width="32" height="32"/>
+    <SubTexture name="right.png" x="64" y="32" width="32" height="32"/>
+    <SubTexture name="buttom_left.png" x="0" y="64" width="32" height="32"/>
+    <SubTexture name="buttom.png" x="32" y="64" width="32" height="32"/>
+    <SubTexture name="buttom_right.png" x="64" y="64" width="32" height="32"/>
+    <SubTexture name="comlumn_up.png" x="96" y="0" width="32" height="32"/>
+    <SubTexture name="comlumn_center.png" x="96" y="32" width="32" height="32"/>
+    <SubTexture name="comlumn_down.png" x="96" y="64" width="32" height="32"/>
+    <SubTexture name="row_left.png" x="0" y="96" width="32" height="32"/>
+    <SubTexture name="row_center.png" x="32" y="96" width="32" height="32"/>
+    <SubTexture name="row_right.png" x="64" y="96" width="32" height="32"/>
+    <SubTexture name="alone.png" x="96" y="96" width="32" height="32"/>
+    <SubTexture name="angle_buttom_right.png" x="128" y="0" width="32" height="32"/>
+    <SubTexture name="angle_buttom_left.png" x="160" y="0" width="32" height="32"/>
+    <SubTexture name="angle_upper_right.png" x="128" y="32" width="32" height="32"/>
+    <SubTexture name="angle_upper_left.png" x="160" y="32" width="32" height="32"/>
+</TextureAtlas>
