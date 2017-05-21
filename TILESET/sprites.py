@@ -20,6 +20,10 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.walking = False
         self.jumping = False
+        self.can_jump = False
+        self.can_doublejump = False
+        self.can_grap = False
+        self.can_sneak = False
         self.current_frame = 0
         self.last_update = 0
         self.load_images()
@@ -43,14 +47,15 @@ class Player(pg.sprite.Sprite):
     def Jump(self):
         #jump if on platform
 
-        if self.on_ground():
-            self.vel.y = -PLAYER_JUMP
-            self.jumping = True
-            self.double_jump = True
-        elif self.double_jump:
-            self.vel.y = -PLAYER_JUMP
-            self.jumping = True
-            self.double_jump = False
+        if self.can_jump:
+            if self.on_ground():
+                self.vel.y = -PLAYER_JUMP
+                self.jumping = True
+                self.double_jump = True
+            elif self.double_jump and self.can_doublejump:
+                self.vel.y = -PLAYER_JUMP
+                self.jumping = True
+                self.double_jump = False
 
     def collide_walls(self, dir):
         if dir == 'x':
@@ -76,9 +81,9 @@ class Player(pg.sprite.Sprite):
     def get_keys(self):
         self.acc = vec(0, PLAYER_GRAV)
         keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_q]:
+        if keys[pg.K_LEFT]:
             self.acc.x = -PLAYER_ACC
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+        if keys[pg.K_RIGHT]:
             self.acc.x = PLAYER_ACC
 
     def on_ground(self):
@@ -148,10 +153,8 @@ class Player(pg.sprite.Sprite):
             if now - self.last_update > 600:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
-                bottom = self.rect.bottom
                 self.image = self.standing_frames[self.current_frame]
                 self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y, pixelcolor):
@@ -207,6 +210,30 @@ class Wall(pg.sprite.Sprite):
             self.image = self.game.wallsheet.get_image(128, 96, 32, 32)
         if pixelcolor == BORDERED_ANGLE_BUTTOM_RIGHT:
             self.image = self.game.wallsheet.get_image(160, 96, 32, 32)
+        self.image.set_colorkey(CANAL_ALPHA)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+
+class Powerup(pg.sprite.Sprite):
+    def __init__(self, game, x, y, pixelcolor):
+        self.groups = game.all_sprites, game.powerups
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        if pixelcolor == POWERUP_JUMP:
+            self.type = 'jump'
+            self.image = self.game.powsheet.get_image(0, 0, 32, 32)
+        if pixelcolor == POWERUP_DOUBLEJUMP:
+            self.type = 'doublejump'
+            self.image = self.game.powsheet.get_image(32, 0, 32, 32)
+        if pixelcolor == POWERUP_GRAP:
+            self.type = 'grap'
+            self.image = self.game.powsheet.get_image(64, 0, 32, 32)
+        if pixelcolor == POWERUP_SNEAK:
+            self.type = 'sneak'
+            self.image = self.game.powsheet.get_image(96, 0, 32, 32)
         self.image.set_colorkey(CANAL_ALPHA)
         self.rect = self.image.get_rect()
         self.x = x

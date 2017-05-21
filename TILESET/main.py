@@ -14,6 +14,11 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH,HEIGHT))
         pg.display.set_caption(TITLE + 'FPS : ' + str(self.clock))
         self.running = True
+
+        #DEBUG VARIABLES
+        self.debug_mode = False
+        self.grid = False
+
         self.font_name = pg.font.match_font('FONT_NAME')
         pg.key.set_repeat(500,100)
         self.load_data()
@@ -24,8 +29,12 @@ class Game:
         self.mapsheet = Spritesheet(path.join(self.img_dir, MAPSHEET))
         self.spritesheet = Spritesheet(path.join(self.img_dir, SPRITESHEET))
         self.wallsheet = Spritesheet(path.join(self.img_dir, WALLSHEET))
+        self.powsheet = Spritesheet(path.join(self.img_dir, POWSHEET))
         self.MAP_X = SPAWNMAP[0]
         self.MAP_Y = SPAWNMAP[1]
+
+        #LOAD SOUNDS
+        self.snd_dir = path.join(self.dir, 'snd')
 
     def generate_level(self, map_img):
         self.screen.blit(map_img,(0,0))
@@ -35,8 +44,21 @@ class Game:
                 if pixelcolor == SPAWN and self.new:
                     self.new = False
                     self.player = Player(self, col, row)
-                elif pixelcolor != WHITE and pixelcolor != SPAWN:
-                    Wall(self, col, row, pixelcolor)
+                elif pixelcolor == POWERUP_JUMP and not self.player.can_jump:
+                    Powerup(self, col, row, pixelcolor)
+                elif pixelcolor == POWERUP_DOUBLEJUMP and not self.player.can_doublejump:
+                    Powerup(self, col, row, pixelcolor)
+                elif pixelcolor == POWERUP_GRAP:
+                    Powerup(self, col, row, pixelcolor)
+                elif pixelcolor == POWERUP_SNEAK:
+                    Powerup(self, col, row, pixelcolor)
+                else:
+                    if pixelcolor != WHITE and pixelcolor != SPAWN \
+                                           and pixelcolor != POWERUP_JUMP \
+                                           and pixelcolor != POWERUP_DOUBLEJUMP \
+                                           and pixelcolor != POWERUP_GRAP \
+                                           and pixelcolor != POWERUP_SNEAK:
+                        Wall(self, col, row, pixelcolor)
 
     def scroll(self,way):
         if way == 'right':
@@ -49,6 +71,7 @@ class Game:
             self.MAP_Y -= 1
 
         self.all_sprites.remove(self.walls)
+        self.all_sprites.remove(self.powerups)
         self.walls.empty()
 
         self.generate_level(self.mapsheet.get_image(self.MAP_X * 32, self.MAP_Y * 24, 32, 24))
@@ -59,6 +82,9 @@ class Game:
         self.new = True
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.powerups = pg.sprite.Group()
+
+        pg.mixer.music.load(path.join(self.snd_dir, 'ground.ogg'))
 
         self.generate_level(self.mapsheet.get_image(self.MAP_X * 32, self.MAP_Y * 24, 32, 24))
 
@@ -66,17 +92,31 @@ class Game:
 
     def run(self):
         #Game Loop
+        pg.mixer.music.play(loops=-1)
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer.music.fadeout(500)
 
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
         pg.display.set_caption(TITLE + 'FPS : ' + str(self.clock))
+
+        #POWERUPS
+        pow_hits = pg.sprite.spritecollide(self.player, self.powerups, True)
+        for pow in pow_hits:
+            if pow.type == 'jump':
+                self.player.can_jump = True
+            if pow.type == 'doublejump':
+                self.player.can_doublejump = True
+            if pow.type == 'grap':
+                self.player.can_grap = True
+            if pow.type == 'sneak':
+                self.player.can_sneak = True
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -88,7 +128,15 @@ class Game:
     def draw(self):
         #Game Loop - Draw
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
+
+        if self.debug_mode:
+            self.draw_text('(D) DEBUG ON', 25, WHITE, TILESIZE, TILESIZE)
+            if self.grid:
+                self.draw_grid()
+                self.draw_text('(G) GRID ON', 25, WHITE, TILESIZE, TILESIZE * 2)
+            else:
+                self.draw_text('(G) GRID OFF', 25, WHITE, TILESIZE, TILESIZE * 2)
+
         self.all_sprites.draw(self.screen)
         pg.display.flip()
 
@@ -107,20 +155,31 @@ class Game:
                     self.running = False
                 if event.key == pg.K_SPACE or event.key == pg.K_UP:
                     self.player.Jump()
-                if event.key == pg.K_r:
-                    self.new()
-                if event.key == pg.K_p:
-                    print(self.walls)
+
+                #DEBUG EVENTS
+                if event.key == pg.K_g and not self.grid:
+                    self.grid = True
+                elif event.key == pg.K_g and self.grid:
+                    self.grid = False
+                if event.key == pg.K_d and not self.debug_mode:
+                    self.debug_mode = True
+                elif event.key == pg.K_d and self.debug_mode:
+                    self.debug_mode = False
 
     def start_screen(self):
         #Start screen
-        self.screen.fill(BLACK)
-        self.draw_text("Welcome to :  " + TITLE, 72, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.draw_text("Press a key to start", 80, WHITE, WIDTH / 2, HEIGHT * 2.2 / 4)
+        pg.mixer.music.load(path.join(self.snd_dir, 'plaine.ogg'))
+        pg.mixer.music.play(loops=-1)
+
+        self.screen.fill(WHITE)
+        self.draw_text("Welcome to :  " + TITLE, 72, BLACK, WIDTH / 4, HEIGHT / 4)
+        self.draw_text("Press a key to start", 80, BLACK, WIDTH / 4, HEIGHT * 2.2 / 4)
         pg.display.flip()
         self.wait_for_key()
 
-    def game_over_screen(self):
+        pg.mixer.music.fadeout(500)
+
+    def end_game_screen(self):
         #Game over screen
         pass
 
@@ -140,7 +199,7 @@ class Game:
         font = pg.font.Font(self.font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
-        text_rect.midtop = (x, y)
+        text_rect = (x, y)
         self.screen.blit(text_surface, text_rect)
 
 g = Game()
@@ -148,6 +207,5 @@ g = Game()
 g.start_screen()
 while g.running :
     g.new()
-    g.game_over_screen
 
 pg.quit()

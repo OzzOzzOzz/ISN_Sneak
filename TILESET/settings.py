@@ -7,7 +7,7 @@ FONT_NAME = 'arial'
 MAPSHEET = "map_sheet.png"
 SPRITESHEET = "jimmy_sheet.png"
 WALLSHEET = "wallset.png"
-
+POWSHEET = "powsheet.png"
 
 #COLORS
 WHITE = (255, 255, 255)
@@ -24,6 +24,10 @@ BGCOLOR = LIGHTBLUE
 
 CANAL_ALPHA = (36, 0, 30)
 SPAWN = (118, 0, 218)
+POWERUP_JUMP = (118, 50, 218)
+POWERUP_DOUBLEJUMP = (118, 100, 218)
+POWERUP_GRAP = (118, 150, 218)
+POWERUP_SNEAK = (118, 200, 218)
 
 UPPER_LEFT = (50, 50, 50)
 UP = (90, 50, 50)
