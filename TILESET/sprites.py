@@ -185,7 +185,7 @@ class Wall(pg.sprite.Sprite):
             self.image = self.game.wallsheet.get_image(96, 64, 32, 32)
         if pixelcolor == ROW_LEFT:
             self.image = self.game.wallsheet.get_image(0, 96, 32, 32)
-        if pixelcolor == BLACK:
+        if pixelcolor == ROW_CENTER:
             self.image = self.game.wallsheet.get_image(32, 96, 32, 32)
         if pixelcolor == ROW_RIGHT:
             self.image = self.game.wallsheet.get_image(64, 96, 32, 32)
@@ -199,6 +199,15 @@ class Wall(pg.sprite.Sprite):
             self.image = self.game.wallsheet.get_image(128, 32, 32, 32)
         if pixelcolor == ANGLE_UPPER_LEFT:
             self.image = self.game.wallsheet.get_image(160, 32, 32, 32)
+        if pixelcolor == BORDERED_ANGLE_UPPER_LEFT:
+            self.image = self.game.wallsheet.get_image(128, 64, 32, 32)
+        if pixelcolor == BORDERED_ANGLE_UPPER_RIGHT:
+            self.image = self.game.wallsheet.get_image(160, 64, 32, 32)
+        if pixelcolor == BORDERED_ANGLE_BUTTOM_LEFT:
+            self.image = self.game.wallsheet.get_image(128, 96, 32, 32)
+        if pixelcolor == BORDERED_ANGLE_BUTTOM_RIGHT:
+            self.image = self.game.wallsheet.get_image(160, 96, 32, 32)
+        self.image.set_colorkey(CANAL_ALPHA)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
